@@ -1,11 +1,8 @@
-/**
- * Singzon, Ryan
- * 260397455
- * 
- * COMP 250: Introduction to Computer Science
- * Fall 2013
- * Prof. Mathieu Blanchette
- */
+//STUDENT1_NAME: Ryan Singzon
+//STUDENT1_ID: 260397455
+
+//COMP 250: Introduction to Computer Science
+//Fall 2013
 
 import java.io.*;    
 import java.util.*;
@@ -107,7 +104,7 @@ class studentList {
    		return false;
     }
     
-    
+    //Takes two lists of student IDs and finds the number of common IDs in both lists using a binary search
     public static int intersectionSizeBinarySearch(studentList L1, studentList L2) {
     	
     	int intersectSize = 0;
@@ -128,12 +125,6 @@ class studentList {
     
     public static int intersectionSizeSortAndParallelPointers(studentList L1, studentList L2) {
 
-    	/**
-    	 * 
-    	 * 
-    	 * Figure out how this algorithm works!
-    	 */
-    	
     	//Initialize variables
     	int intersectSize = 0;
     	int pointerA = 0;
@@ -190,44 +181,51 @@ class studentList {
     	return intersectSize;
     }
     
-    
-    
     /* The main method */
     /* Write code here to test your methods, and evaluate the running time of each. 2013f */
     /* This method will not be marked */
     public static void main(String args[]) throws Exception {
-	
 		studentList firstList;
 		studentList secondList;
-	
-		firstList = new studentList("comp250.txt", "COMP250 - Introduction to Computer Science");
-		secondList = new studentList("math240.txt", "MATH240 - Discrete Mathematics");
-	
-		// get the time before starting the intersections
-		long startTime = System.nanoTime();
 		
-		// repeat the process a certain number of times, to make more accurate average measurements.
-		for (int rep=0;rep<1000;rep++) {
-		    
-		    // This is how to generate lists of random IDs. 
-		    // For firstList, we generate 16000 IDs
-		    // For secondList, we generate 16000 IDs
-		    
-		    firstList = new studentList(16000 , "COMP250 - Introduction to Computer Science"); 
-		    secondList = new studentList(16000 , "MATH240 - Discrete Mathematics"); 
-		    
-		    // run the intersection method
-		    int intersectionNested = studentList.intersectionSizeNestedLoops(firstList, secondList);
-		    int intersectionParallelPointers = studentList.intersectionSizeSortAndParallelPointers(firstList, secondList);
-		    int intersectionBinary = studentList.intersectionSizeBinarySearch(firstList, secondList);
-		    int intersectionMerge = studentList.intersectionSizeMergeAndSort(firstList,secondList);
-		    System.out.println(intersectionNested + "\t" + intersectionParallelPointers + "\t" + intersectionBinary + "\t" + intersectionMerge);
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("experimentalData.txt", true)));
+		
+		out.println("Binary search");
+		
+		long programTime = System.currentTimeMillis();
+		System.out.println("Start time: " + programTime);
+		
+		//Create a loop which runs the algorithm on different sized lists
+		for(int power = 0; power < 11; power++){
+			// repeat the process a certain number of times, to make more accurate average measurements.
+			for (int rep=0;rep<1000;rep++) {
+				
+				firstList=new studentList((int)Math.pow(2, power) * 1000, "COMP250 - Introduction to Computer Science"); 
+				secondList=new studentList((int)Math.pow(2, power) * 1000, "MATH240 - Discrete Mathematics"); 
+				
+				// get the time before starting the intersections
+				long startTime = System.nanoTime();
+				
+				// run the intersection method
+				int intersect = studentList.intersectionSizeBinarySearch(firstList, secondList);
+				
+				// get the time after the intersection
+				long endTime = System.nanoTime();
+				//out.println("List size: "+Math.pow(2, power)+ "\tTime: "+ (endTime-startTime)/1000.0 + " nanoseconds \t Intersect: " + intersect);
+				out.println((endTime-startTime)/1000.0);
+			}
 		}
 		
-		// get the time after the intersection
-		long endTime = System.nanoTime();
+		out.close();
 		
-		System.out.println("Running time: "+ (endTime-startTime)/1000.0 + " nanoseconds");
+		System.out.println("Done");
+		System.out.println("Process took " + (System.currentTimeMillis() - programTime)/1000.0 + " s");
+		
+		
+//		    int intersectionMerge = studentList.intersectionSizeMergeAndSort(firstList, secondList);
+//		    int intersectionPointers = studentList.intersectionSizeSortAndParallelPointers(firstList, secondList);
+//		    int intersectionNested=studentList.intersectionSizeNestedLoops(firstList,secondList);
+//		    System.out.println("Binary: "+intersectionBinary+"\t Merge: "+intersectionMerge+"\t Pointers: "+intersectionPointers+"\t Nested: "+intersectionNested);
     }
 }
 
