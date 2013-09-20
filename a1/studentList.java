@@ -196,12 +196,17 @@ class studentList {
 		System.out.println("Start time: " + programTime);
 		
 		//Create a loop which runs the algorithm on different sized lists
-		for(int power = 0; power < 11; power++){
+		for(int power = 0; power < 9; power++){
+			
+			int listSize = (int)Math.pow(2,  power);
+			out.println("LIST SIZE: " + listSize);
+			
 			// repeat the process a certain number of times, to make more accurate average measurements.
 			for (int rep=0;rep<1000;rep++) {
 				
-				firstList=new studentList((int)Math.pow(2, power) * 1000, "COMP250 - Introduction to Computer Science"); 
-				secondList=new studentList((int)Math.pow(2, power) * 1000, "MATH240 - Discrete Mathematics"); 
+				
+				firstList=new studentList(listSize, "COMP250 - Introduction to Computer Science"); 
+				secondList=new studentList(listSize, "MATH240 - Discrete Mathematics"); 
 				
 				// get the time before starting the intersections
 				long startTime = System.nanoTime();
@@ -211,7 +216,7 @@ class studentList {
 				
 				// get the time after the intersection
 				long endTime = System.nanoTime();
-				//out.println("List size: "+Math.pow(2, power)+ "\tTime: "+ (endTime-startTime)/1000.0 + " nanoseconds \t Intersect: " + intersect);
+				//out.println("List size: "+listSize+ "\tTime: "+ (endTime-startTime)/1000.0 + " nanoseconds \t Intersect: " + intersect);
 				out.println((endTime-startTime)/1000.0);
 			}
 		}
