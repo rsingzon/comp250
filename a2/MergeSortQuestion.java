@@ -17,52 +17,120 @@ class MergeSortQuestion {
     	
     	int[] tempArray = new int[A.length];
     	int indexLeft = start;
-    	int indexLeftMid = firstThird + 1;
-    	int indexRightMid = secondThird + 1;
+    	int indexMiddle = firstThird + 1;
+    	int indexRight = secondThird + 1;
     	int tempIndex = start;
-    	
     	
     	while(tempIndex <= stop){
     		
     		//Check if the indices are within bounds, then
     		//insert the smallest value into the temp array
-   			if(	indexLeft <= firstThird 
-   					&& A[indexLeft] < A[indexLeftMid] 
-   					&& A[indexLeft] < A[indexRightMid]){
-   				tempArray[tempIndex] = A[indexLeft];
-   				indexLeft++;
-   			}	
-    		else if(indexLeftMid < secondThird 
-    				&& A[indexLeftMid] < A[indexLeft] 
-    				&& A[indexLeftMid] < A[indexRightMid]){
-    			tempArray[tempIndex] = A[indexLeftMid];
-    			indexLeftMid++;
-    		}
-    		else if(indexRightMid <= stop){
-    			tempArray[tempIndex] = A[indexRightMid];
-    			indexRightMid++;
-    		}
-   			System.out.println(tempArray[tempIndex]);
-    		tempIndex++;
     		
+    		int left;
+    		int middle;
+    		int right;
+    		
+    		boolean leftInBounds = indexLeft <= firstThird;
+    		boolean middleInBounds = indexMiddle <= secondThird;
+    		boolean rightInBounds = indexRight <= stop;
+    		
+    		//All of the values are valid, find the smallest of the three
+    		if(leftInBounds && middleInBounds && rightInBounds){
+       			left = A[indexLeft];
+       			middle = A[indexMiddle];
+       			right = A[indexRight];
+
+       			if(left <= middle && left <= right){
+    				tempArray[tempIndex] = left;
+    				indexLeft++;
+    			}
+    			else if(middle <= right){
+    				tempArray[tempIndex] = middle;
+    				indexMiddle++;
+    			}
+    			else{
+    				tempArray[tempIndex] = right;
+    				indexRight++;
+    			}
+    		}
+    		
+    		//Left index is out of bounds
+    		else if(middleInBounds && rightInBounds){
+    			middle = A[indexMiddle];
+       			right = A[indexRight];
+    			
+    			if(middle <= right){
+    				tempArray[tempIndex] = middle;
+    				indexMiddle++;
+    			}
+    			else{
+    				tempArray[tempIndex] = right;
+    				indexRight++;
+    			}
+    		}
+    		
+    		//Middle index is out of bounds
+    		else if(leftInBounds && rightInBounds){
+    			left = A[indexLeft];
+    			right = A[indexRight];
+    			
+    			if(left <= right){
+    				tempArray[tempIndex] = left;
+    				indexLeft++;
+    			}
+    			else{
+    				tempArray[tempIndex] = right;
+    				indexRight++;
+    			}
+    		}
+    		
+    		//Right index is out of bounds
+    		else if(leftInBounds && middleInBounds){
+    			left = A[indexLeft];
+    			middle = A[indexMiddle];
+    			
+    			if(left <= middle){
+    				tempArray[tempIndex] = left;
+    				indexLeft++;
+    			}
+    			else{
+    				tempArray[tempIndex] = middle;
+    				indexMiddle++;
+    			}
+    		}
+    		
+    		//Left and middle out of bounds
+    		else if(rightInBounds){
+				tempArray[tempIndex] = A[indexRight];
+				indexRight++;
+    		}
+    		
+    		//Left and right out of bounds
+    		else if(middleInBounds){
+				tempArray[tempIndex] = A[indexMiddle];
+				indexMiddle++;
+    		}
+    		
+    		//Middle and right out of bounds
+    		else{
+				tempArray[tempIndex] = A[indexLeft];
+				indexLeft++;
+    		}
+    		
+    		tempIndex++;
     	}
     	
-    	System.out.println("Sorted Array: ");
-    	for(int i = 0; i <= stop; i++){
-    		System.out.print(tempArray[i]);
+    	//Place the sorted values back into the original array
+    	for(int i = start; i <= stop; i++){
+    		A[i] = tempArray[i];
     	}
-    	System.out.println();
     }
 
     // sorts A[start...stop]
     public static void mergeSortThreeWay(int A[], int start, int stop) {
 
-    	System.out.println("Start: " + start);
-		System.out.println("Stop: " + stop + "\n");
-    	
     	//Base case: The subarray only contains one element
     	if(stop - start == 0){
-
     	}
    
     	//If the subarray contains two elements, sort it
@@ -79,21 +147,9 @@ class MergeSortQuestion {
     		int firstThird = (stop - start) / 3 + start;
     		int secondThird = (stop - start) * 2 / 3 + start;
     		
-    		/*System.out.println("first: " + firstThird);
-    		System.out.println("second: " + secondThird);
-    		*/
-    		System.out.println("START TO FIRST:");
     		mergeSortThreeWay(A, start, firstThird);
-    		
-    		System.out.println("SECOND TO THIRD");
     		mergeSortThreeWay(A, firstThird + 1, secondThird);
-    		
-    		System.out.println("THIRD TO STOP");
     		mergeSortThreeWay(A, secondThird + 1, stop);   
-    		
-    		System.out.println("MERGING: " + start + ", "+firstThird+", "+secondThird+", "+stop);
-    		
-    		//The values from A[start..firstThird], A[firstThird+1..secondThird], etc must be SORTED
     		mergeThreeWay(A, start, firstThird, secondThird, stop);
     	}
     }
@@ -101,8 +157,7 @@ class MergeSortQuestion {
     
     public static void main (String args[]) throws Exception {
        
-		//int myArray[] = {8,3,5,7,9,2,3,5,5}; // an example array to be sorted. You'll need to test your code with many cases, to be sure it works.
-    	int myArray[] = {7,4,9,8,5,3};
+		int myArray[] = {8,22,46,32,213,19,21,3,5,7,9,2,3,5,5,8,12,13,34,54,232,9000,14,51}; // an example array to be sorted. You'll need to test your code with many cases, to be sure it works.
     	
     	//Step 1: Call mergeSort on the entire array
     	//Step 2: The mergeSort splits the array into three parts
@@ -110,10 +165,9 @@ class MergeSortQuestion {
     	//Step 4: Each of the small parts are merged back into one array
     	
 		mergeSortThreeWay(myArray,0,myArray.length-1);
-		System.out.println("\nArray length: " + myArray.length);
 		System.out.println("Sorted array is:");
 		for (int i=0;i<myArray.length;i++) {
-		    System.out.print(myArray[i]);
+		    System.out.print(myArray[i] + " ");
 		}
     }
 }
