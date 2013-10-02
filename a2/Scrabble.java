@@ -1,5 +1,9 @@
-// STUDENT_NAME:
-// STUDENT_ID:
+//STUDENT1_NAME: Ryan Singzon
+//STUDENT1_ID: 260397455
+
+//COMP 250: Introduction to Computer Science
+//Assignment 2
+//Fall 2013
 
 import java.util.*;
 import java.io.*;
@@ -31,10 +35,54 @@ public class Scrabble {
      Returns:
         Nothing
      */
+    
     public static void printValidWords(char availableLetters[], String WordToDate) {
 	
-	// WRITE YOUR CODE HERE
+    	int length = availableLetters.length;
+    	
+    	if(myDictionary.contains(WordToDate)){
+    		//System.out.println(WordToDate);
+    	}
 
+    	//Base case: availableLetters only has one letter
+    	//Add the letter to WordToDate, and finish
+    	if(length == 1){  
+    	}
+    	
+    	else{
+    		char[] newLetters = new char[length - 1];
+    		boolean letterRemoved = false;
+
+    		//Add each letter to WordToDate, then recursively call function
+    		for(int i=0; i<length; i++){
+
+    			char letterAdded = availableLetters[i];
+    			int index = 0;
+
+    			WordToDate += letterAdded;
+    			System.out.println("word: "+WordToDate);
+    			
+    			//Create a new array, removing the letter that was used
+    			for (int j = 0; j<length; j++){
+    				if(letterAdded == availableLetters[j] && letterRemoved == false){
+    					letterRemoved = true;
+    				}
+    				else{
+    					newLetters[index] = availableLetters[j];
+    					index++;
+    				}
+    			}
+    			
+    			System.out.println("New Letters:");
+    			for(int j = 0; j<newLetters.length; j++){
+    				System.out.print(newLetters[j]);
+    			}
+    			System.out.println();
+    			
+    			printValidWords(newLetters, WordToDate);
+    		}
+    	}
+    	
     }
     
     
