@@ -37,33 +37,32 @@ public class Scrabble {
      */
     
     public static void printValidWords(char availableLetters[], String WordToDate) {
-	
+    	String newWordToDate;
     	int length = availableLetters.length;
-    	
-    	if(myDictionary.contains(WordToDate)){
-    		//System.out.println(WordToDate);
-    	}
 
     	//Base case: availableLetters only has one letter
     	//Add the letter to WordToDate, and finish
     	if(length == 1){  
+    		newWordToDate = WordToDate + availableLetters[0];
+    		if(myDictionary.contains(newWordToDate)){
+    			System.out.println(newWordToDate);
+    		}
     	}
     	
+    	//Permute the available letters and print any valid words
     	else{
     		char[] newLetters = new char[length - 1];
-    		boolean letterRemoved = false;
 
-    		//Add each letter to WordToDate, then recursively call function
+    		//Add each letter to WordToDate, then recursively call function 
     		for(int i=0; i<length; i++){
-
+    			boolean letterRemoved = false;
     			char letterAdded = availableLetters[i];
     			int index = 0;
 
-    			WordToDate += letterAdded;
-    			System.out.println("word: "+WordToDate);
+    			newWordToDate = WordToDate + letterAdded;
     			
     			//Create a new array, removing the letter that was used
-    			for (int j = 0; j<length; j++){
+    			for (int j = 0; index<newLetters.length; j++){
     				if(letterAdded == availableLetters[j] && letterRemoved == false){
     					letterRemoved = true;
     				}
@@ -72,17 +71,12 @@ public class Scrabble {
     					index++;
     				}
     			}
-    			
-    			System.out.println("New Letters:");
-    			for(int j = 0; j<newLetters.length; j++){
-    				System.out.print(newLetters[j]);
+    			if(myDictionary.contains(newWordToDate)){
+    				System.out.println(newWordToDate);
     			}
-    			System.out.println();
-    			
-    			printValidWords(newLetters, WordToDate);
+    			printValidWords(newLetters, newWordToDate);
     		}
     	}
-    	
     }
     
     
