@@ -178,7 +178,7 @@ class expressionTreeNodeSolution {
     /* returns the root of a new expression tree representing the derivative of the
        original expression */
     expressionTreeNodeSolution differentiate() {
-    	
+
     	expressionTreeNodeSolution derivative = this.deepCopy();
     	String operator = getValue().replaceAll("\\s+","");
     	//Base case: node == x
@@ -198,37 +198,50 @@ class expressionTreeNodeSolution {
     	}
     	    	
     	//Set the value of each node to its derivative
-    	if(getValue().replaceAll("\\s+","").equals("add")){
-    		derivative.setValue("add("+getLeftChild().differentiate()+","+getRightChild().differentiate()+")");
+    	if(operator.equals("add")){
+    		derivative.setValue("add");
+    		derivative.setLeftChild(new expressionTreeNodeSolution(""+getLeftChild().differentiate()));
+    		derivative.setRightChild(new expressionTreeNodeSolution(""+getRightChild().differentiate()));
     		
     	} else if(operator.equals("mult")){
-    		derivative.setValue("add(mult("+getLeftChild()+","+getRightChild().differentiate()+"),mult("+getRightChild()+","+getLeftChild().differentiate()+"))sdfsdf");
+    		derivative.setValue("add");
+    		derivative.setLeftChild(new expressionTreeNodeSolution("mult("+getLeftChild()+","+getRightChild().differentiate()+")"));
+    		derivative.setRightChild(new expressionTreeNodeSolution("mult("+getRightChild()+","+getLeftChild().differentiate()+")"));
     		
     	} else if(operator.equals("minus")){
-    		derivative.setValue("minus("+getLeftChild().differentiate()+","+getRightChild().differentiate()+")");
+    		derivative.setValue("minus");
+    		derivative.setLeftChild(new expressionTreeNodeSolution("minus("+getLeftChild().differentiate()+")"));
+    		derivative.setRightChild(new expressionTreeNodeSolution(""+getRightChild().differentiate()));
     		
     	} else if(operator.equals("sin")){
-    		derivative.setValue("mult(cos("+getLeftChild()+"),"+getLeftChild().differentiate()+")");
+    		derivative.setValue("mult");
+    		derivative.setLeftChild(new expressionTreeNodeSolution("cos("+getLeftChild()+")"));
+    		derivative.setRightChild(new expressionTreeNodeSolution(""+getLeftChild().differentiate()));
     		
     	} else if(operator.equals("cos")){
-    		derivative.setValue("minus(0,mult(sin("+getLeftChild()+"),"+getLeftChild().differentiate()+"))");
+    		derivative.setValue("minus");
+    		derivative.setLeftChild(new expressionTreeNodeSolution("0"));
+    		rightChild = new expressionTreeNodeSolution("mult(sin("+getLeftChild()+"),"+getLeftChild().differentiate()+")");
+    		derivative.setRightChild(rightChild);
     		
     	} else if(operator.equals("exp") || getValue().equals("e^")){
-    		derivative.setValue("mult(exp("+getLeftChild()+"),"+getLeftChild().differentiate()+")");
+    		derivative.setValue("mult");
+    		derivative.setLeftChild(new expressionTreeNodeSolution("exp("+getLeftChild()+")"));
+    		derivative.setRightChild(new expressionTreeNodeSolution(""+getLeftChild().differentiate()));
     	} else{
     		System.out.println("Invalid expression ["+getValue()+"]");
     		System.exit(0);
     	}
-        System.out.println("Derivative: "+derivative);
     	return derivative;
     }
         
     
     public static void main(String args[]) {
-        expressionTreeNodeSolution e = new expressionTreeNodeSolution("add(x, cos(mult(2,x)))");
+        expressionTreeNodeSolution e = new expressionTreeNodeSolution("cos(sin(add(sin(add(exp(mult(x,add(2,0))),50)),29)))");//"sin(add(2,minus(exp(cos(mult(2,x))), 100),mult(50,x)))");
         System.out.println(e);
-        System.out.println(e.evaluate(1));
+        System.out.println(e.evaluate(2));
         System.out.println(e.differentiate());
+        System.out.println(e.differentiate().evaluate(2));
    
  }
 }
