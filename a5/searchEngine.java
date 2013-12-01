@@ -101,9 +101,39 @@ public class searchEngine {
        
        This method will probably fit in about 30 lines.*/
     void computePageRanks() {
-
+    	//Obtain all urls in the internet and iterate through all of them
+    	Iterator<String> allUrls = internet.getVertices().iterator();
     	
-	
+    	//Re-compute the page rank until the numbers have converged (ie. 100 times)
+    	int iteration = 0;
+    	while( iteration < 100 ){
+    		allUrls = internet.getVertices().iterator();
+    		
+    		//Set the page rank for each URL in the internet
+    		while( allUrls.hasNext() ){
+        		
+        		String url = allUrls.next();
+        		if(iteration == 0){
+        			internet.setPageRank(url, 1);  	//Set pageranks to 1 for first iteration
+        		} 
+        		
+        		// ~~~~~~~~~~COMMENT GOES HERE ~~~~~~~~~~~~~~~~~~
+        		else{
+        			Iterator<String> linksIntoUrl = internet.getEdgesInto(url).iterator();
+        			
+        			double pageRank = 0;
+        			while( linksIntoUrl.hasNext() ){
+        				String linkedUrl = linksIntoUrl.next();
+        				pageRank += internet.getPageRank(linkedUrl) / internet.getOutDegree(linkedUrl);
+        			}
+        			
+        			pageRank = 0.5 + 0.5 * pageRank; 
+            		internet.setPageRank(url, pageRank);
+            	//	System.out.println("Set pagerank of "+url+" to ["+internet.getPageRank(url)+"]");
+        		}
+        	}
+    		iteration++;
+    	}
     } // end of computePageRanks
     
 	
@@ -115,9 +145,33 @@ public class searchEngine {
        This method should take about 25 lines of code.
     */
     String getBestURL(String query) {
-	/* WRITE YOUR CODE HERE */
+    	System.out.println("YOUR QUERY: "+query);
+    	
+    	String bestUrl = "";
+    	double highestPageRank = 0;
 
-	return null; // remove this
+    	// Get the urls of all the vertices in the internet and search them for the query
+    	Iterator<String> allUrls = internet.getVertices().iterator();
+    	while( allUrls.hasNext() ){
+    		String url = allUrls.next();
+    		Iterator<String> wordsInUrl = wordIndex.get(url).iterator();
+    		
+    		//Search the list of words contained on each page
+    		while( wordsInUrl.hasNext() ){
+    			String word = wordsInUrl.next();
+    			//Convert both the query and the words to lowercase to make the search 
+    			//case insensitive
+    			if( word.toLowerCase().contains(query.toLowerCase()) ){
+    				if( internet.getPageRank(url) > highestPageRank ){
+    					highestPageRank = internet.getPageRank(url);
+    					bestUrl = url;
+    				}
+    			}
+    		}
+    	}
+    	
+    	System.out.println("Page rank: " + internet.getPageRank(bestUrl));
+		return bestUrl;
     } // end of getBestURL
     
     
@@ -126,15 +180,15 @@ public class searchEngine {
 		searchEngine mySearchEngine = new searchEngine();
 		
 		// to debug your program, start with.
-		mySearchEngine.traverseInternet("http://www.cs.mcgill.ca/~blanchem/250/a.html");
+		//mySearchEngine.traverseInternet("http://www.cs.mcgill.ca/~blanchem/250/a.html");
 		
 		// When your program is working on the small example, move on to
-		//mySearchEngine.traverseInternet("http://www.cs.mcgill.ca");
+		mySearchEngine.traverseInternet("http://www.cs.mcgill.ca");
 		
 		// this is just for debugging purposes. REMOVE THIS BEFORE SUBMITTING
-		System.out.println(mySearchEngine);
 		
 		mySearchEngine.computePageRanks();
+		System.out.println(mySearchEngine);
 		
 		BufferedReader stndin = new BufferedReader(new InputStreamReader(System.in));
 		String query;
