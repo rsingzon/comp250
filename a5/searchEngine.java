@@ -11,24 +11,24 @@ import java.io.*;
 // This class implements a google-like search engine
 public class searchEngine {
 
-    public HashMap<String, LinkedList<String> > wordIndex;                  // this will contain a set of pairs (String, LinkedList of Strings)	
-    public directedGraph internet;             // this is our internet graph
+    public HashMap<String, LinkedList<String> > wordIndex;      // this will contain a set of pairs (String, LinkedList of Strings)	
+    public directedGraph internet;             					// this is our internet graph
     
     
     
     // Constructor initializes everything to empty data structures
     // It also sets the location of the internet files
     searchEngine() {
-	// Below is the directory that contains all the internet files
-	htmlParsing.internetFilesLocation = "internetFiles";
-	wordIndex = new HashMap<String, LinkedList<String> > ();		
-	internet = new directedGraph();				
+		// Below is the directory that contains all the internet files
+		htmlParsing.internetFilesLocation = "internetFiles";
+		wordIndex = new HashMap<String, LinkedList<String> > ();		
+		internet = new directedGraph();				
     } // end of constructor2013
     
     
     // Returns a String description of a searchEngine
     public String toString () {
-	return "wordIndex:\n" + wordIndex + "\ninternet:\n" + internet;
+    	return "wordIndex:\n" + wordIndex + "\ninternet:\n" + internet;
     }
     
     
@@ -37,8 +37,6 @@ public class searchEngine {
     // and the set of visited vertices.
     
     void traverseInternet(String url) throws Exception {
-	/* WRITE SOME CODE HERE */
-	
 	/* Hints
 	   0) This should take about 50-70 lines of code (or less)
 	   1) To parse the content of the url, call
@@ -56,9 +54,42 @@ public class searchEngine {
 	   You will most likely need to use the methods containsKey(String s), 
 	   get(String s), put(String s, LinkedList l).  
 	*/
-	
-	
-	
+    	
+    	// Create a queue of URLs that will be traversed
+    	Queue<String> urlQueue = new LinkedList<String>(); 
+    	internet.setVisited(url, true);
+    	urlQueue.add(url);
+    	
+    	// Continue traversing the URLs until the queue has been emptied
+    	while( !urlQueue.isEmpty() ){
+    		
+    		//Add the URL at the front of the queue to the internet
+    		String currentUrl = urlQueue.remove();
+    		internet.addVertex(currentUrl);
+
+    		// Obtain all of the words contained in the website and update word index
+        	LinkedList<String> allWords = htmlParsing.getContent(currentUrl);
+        	wordIndex.put(currentUrl, allWords);
+        	
+        	//Get the links contained on the current URL
+        	LinkedList<String> allLinks = htmlParsing.getLinks(currentUrl);
+        	Iterator<String> i = allLinks.iterator();
+        	
+        	while( i.hasNext() ){
+        		String linkedUrl = i.next();
+        		
+        		// Always add links out of the current URL
+        		internet.addEdge(currentUrl, linkedUrl);
+        		
+        		// Traverse linked URL if it has not yet been visited
+        		if( internet.getVisited(linkedUrl) == false ){
+        			internet.setVisited(linkedUrl, true);
+        			internet.addVertex(linkedUrl);
+            		urlQueue.add(linkedUrl);
+        		}
+        	}
+    	}
+    	
     } // end of traverseInternet
     
     
@@ -68,10 +99,10 @@ public class searchEngine {
        Use the iterative procedure described in the text of the assignment to
        compute the pageRanks for every vertices in the graph. 
        
-       This method will probably fit in about 30 lines.
-    */
+       This method will probably fit in about 30 lines.*/
     void computePageRanks() {
-	/* WRITE YOUR CODE HERE */
+
+    	
 	
     } // end of computePageRanks
     
@@ -92,26 +123,27 @@ public class searchEngine {
     
 	
     public static void main(String args[]) throws Exception{		
-	searchEngine mySearchEngine = new searchEngine();
-	// to debug your program, start with.
-	//	mySearchEngine.traverseInternet("http://www.cs.mcgill.ca/~blanchem/250/a.html");
-	
-	// When your program is working on the small example, move on to
-	mySearchEngine.traverseInternet("http://www.cs.mcgill.ca");
-	
-	// this is just for debugging purposes. REMOVE THIS BEFORE SUBMITTING
-	System.out.println(mySearchEngine);
-	
-	mySearchEngine.computePageRanks();
-	
-	BufferedReader stndin = new BufferedReader(new InputStreamReader(System.in));
-	String query;
-	do {
-	    System.out.print("Enter query: ");
-	    query = stndin.readLine();
-	    if ( query != null && query.length() > 0 ) {
-		System.out.println("Best site = " + mySearchEngine.getBestURL(query));
-	    }
-	} while (query!=null && query.length()>0);				
+		searchEngine mySearchEngine = new searchEngine();
+		
+		// to debug your program, start with.
+		mySearchEngine.traverseInternet("http://www.cs.mcgill.ca/~blanchem/250/a.html");
+		
+		// When your program is working on the small example, move on to
+		//mySearchEngine.traverseInternet("http://www.cs.mcgill.ca");
+		
+		// this is just for debugging purposes. REMOVE THIS BEFORE SUBMITTING
+		System.out.println(mySearchEngine);
+		
+		mySearchEngine.computePageRanks();
+		
+		BufferedReader stndin = new BufferedReader(new InputStreamReader(System.in));
+		String query;
+		do {
+		    System.out.print("Enter query: ");
+		    query = stndin.readLine();
+		    if ( query != null && query.length() > 0 ) {
+			System.out.println("Best site = " + mySearchEngine.getBestURL(query));
+		    }
+		} while (query!=null && query.length()>0);				
     } // end of main
 }
