@@ -37,23 +37,6 @@ public class searchEngine {
     // and the set of visited vertices.
     
     void traverseInternet(String url) throws Exception {
-	/* Hints
-	   0) This should take about 50-70 lines of code (or less)
-	   1) To parse the content of the url, call
-	   htmlParsing.getContent(url), which returns a LinkedList of Strings 
-	   containing all the words at the given url. Also call htmlParsing.getLinks(url).
-	   and assign their results to a LinkedList of Strings.
-	   2) To iterate over all elements of a LinkedList, use an Iterator,
-	   as described in the text of the assignment
-	   3) Refer to the description of the LinkedList methods at
-	   http://docs.oracle.com/javase/6/docs/api/ .
-	   You will most likely need to use the methods contains(String s), 
-	   addLast(String s), iterator()
-	   4) Refer to the description of the HashMap methods at
-	   http://docs.oracle.com/javase/6/docs/api/ .
-	   You will most likely need to use the methods containsKey(String s), 
-	   get(String s), put(String s, LinkedList l).  
-	*/
     	
     	// Create a queue of URLs that will be traversed
     	Queue<String> urlQueue = new LinkedList<String>(); 
@@ -111,17 +94,19 @@ public class searchEngine {
     		
     		//Set the page rank for each URL in the internet
     		while( allUrls.hasNext() ){
-        		
         		String url = allUrls.next();
+
+        		//Set pageranks to 1 for first iteration
         		if(iteration == 0){
-        			internet.setPageRank(url, 1);  	//Set pageranks to 1 for first iteration
+        			internet.setPageRank(url, 1);  	
         		} 
         		
-        		// ~~~~~~~~~~COMMENT GOES HERE ~~~~~~~~~~~~~~~~~~
+        		// For subsequent iterations, calculate the page rank of the URL based on the
+        		// number of pages that are linked to it and the page ranks of those URLs
         		else{
         			Iterator<String> linksIntoUrl = internet.getEdgesInto(url).iterator();
-        			
         			double pageRank = 0;
+        			
         			while( linksIntoUrl.hasNext() ){
         				String linkedUrl = linksIntoUrl.next();
         				pageRank += internet.getPageRank(linkedUrl) / internet.getOutDegree(linkedUrl);
@@ -129,7 +114,6 @@ public class searchEngine {
         			
         			pageRank = 0.5 + 0.5 * pageRank; 
             		internet.setPageRank(url, pageRank);
-            	//	System.out.println("Set pagerank of "+url+" to ["+internet.getPageRank(url)+"]");
         		}
         	}
     		iteration++;
@@ -145,8 +129,6 @@ public class searchEngine {
        This method should take about 25 lines of code.
     */
     String getBestURL(String query) {
-    	System.out.println("YOUR QUERY: "+query);
-    	
     	String bestUrl = "";
     	double highestPageRank = 0;
 
@@ -159,9 +141,13 @@ public class searchEngine {
     		//Search the list of words contained on each page
     		while( wordsInUrl.hasNext() ){
     			String word = wordsInUrl.next();
+    		
     			//Convert both the query and the words to lowercase to make the search 
     			//case insensitive
     			if( word.toLowerCase().contains(query.toLowerCase()) ){
+
+    				//If the url contains the query AND its page rank is higher than the current
+    				//highest page rank, then set that URL to the new best URL
     				if( internet.getPageRank(url) > highestPageRank ){
     					highestPageRank = internet.getPageRank(url);
     					bestUrl = url;
@@ -169,8 +155,6 @@ public class searchEngine {
     			}
     		}
     	}
-    	
-    	System.out.println("Page rank: " + internet.getPageRank(bestUrl));
 		return bestUrl;
     } // end of getBestURL
     
@@ -186,9 +170,8 @@ public class searchEngine {
 		mySearchEngine.traverseInternet("http://www.cs.mcgill.ca");
 		
 		// this is just for debugging purposes. REMOVE THIS BEFORE SUBMITTING
-		
 		mySearchEngine.computePageRanks();
-		System.out.println(mySearchEngine);
+//		System.out.println(mySearchEngine);
 		
 		BufferedReader stndin = new BufferedReader(new InputStreamReader(System.in));
 		String query;
@@ -196,7 +179,9 @@ public class searchEngine {
 		    System.out.print("Enter query: ");
 		    query = stndin.readLine();
 		    if ( query != null && query.length() > 0 ) {
-			System.out.println("Best site = " + mySearchEngine.getBestURL(query));
+		    String bestSite = mySearchEngine.getBestURL(query);
+			System.out.println("Best site = " + bestSite);
+			System.out.println("Page rank = " + mySearchEngine.internet.getPageRank(bestSite));
 		    }
 		} while (query!=null && query.length()>0);				
     } // end of main
